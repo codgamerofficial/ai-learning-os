@@ -62,6 +62,8 @@ Default mode. The app uses polished local logic and sample data so the UX works 
 
 Set `VITE_AI_PROVIDER=server` on the frontend and configure the server-side env vars in Vercel. The browser talks to `/api/ai`, and the model key stays inside the Vercel Function.
 
+The default secure setup is now Hugging Face Inference Providers through its OpenAI-compatible chat endpoint, so the frontend architecture stays the same while the server route swaps providers.
+
 ## Local Development
 
 ```bash
@@ -81,15 +83,23 @@ Copy [`.env.example`](D:\Ai Student Copilot\.env.example) to `.env` and adjust i
 VITE_AI_PROVIDER=mock
 
 # Server-side only variables for Vercel Functions or `vercel dev`
+# Hugging Face Inference Providers uses an OpenAI-compatible chat endpoint.
+HF_TOKEN=
 AI_API_KEY=
-AI_BASE_URL=https://api.openai.com/v1
-AI_MODEL=gpt-4.1-mini
+AI_BASE_URL=https://router.huggingface.co/v1
+AI_MODEL=Qwen/Qwen2.5-7B-Instruct-1M:fastest
 ```
 
 Recommended Vercel setup:
 
 - Frontend env var: `VITE_AI_PROVIDER=server`
-- Server env vars: `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL`
+- Server env vars: `HF_TOKEN` or `AI_API_KEY`, plus `AI_BASE_URL` and `AI_MODEL`
+
+Hugging Face notes:
+
+- The route expects a Hugging Face user access token on the server side.
+- Free Hugging Face accounts get a small monthly Inference Providers credit, not unlimited free usage.
+- Because the app only needs chat-completion style calls, Hugging Face's OpenAI-compatible router is a good fit here.
 
 If `VITE_AI_PROVIDER` is left as `mock`, the product stays in demo mode.
 

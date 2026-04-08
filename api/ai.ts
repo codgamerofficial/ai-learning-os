@@ -1,4 +1,6 @@
-import type { AiApiFailure, AiApiSuccess, AiRequestPayload } from '../src/lib/ai-contract'
+/// <reference types="node" />
+
+import type { AiApiFailure, AiApiSuccess, AiRequestPayload } from '../src/lib/ai-contract.js'
 import {
   buildMockHomeworkSimple,
   buildMockHomeworkSolution,
@@ -8,8 +10,8 @@ import {
   buildMockStudyAnswer,
   buildMockSummary,
   safeJsonParse,
-} from '../src/lib/mockAi'
-import type { PerformanceInsight, QuizQuestion } from '../src/types'
+} from '../src/lib/mockAi.js'
+import type { PerformanceInsight, QuizQuestion } from '../src/types.js'
 
 export const config = {
   runtime: 'nodejs',
@@ -25,9 +27,9 @@ function json(data: AiApiSuccess | AiApiFailure, status = 200) {
 }
 
 function serverConfig() {
-  const apiKey = process.env.AI_API_KEY || process.env.OPENAI_API_KEY || ''
-  const baseUrl = (process.env.AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '')
-  const model = process.env.AI_MODEL || 'gpt-4.1-mini'
+  const apiKey = process.env.HF_TOKEN || process.env.AI_API_KEY || process.env.OPENAI_API_KEY || ''
+  const baseUrl = (process.env.AI_BASE_URL || 'https://router.huggingface.co/v1').replace(/\/$/, '')
+  const model = process.env.AI_MODEL || 'Qwen/Qwen2.5-7B-Instruct-1M:fastest'
 
   return { apiKey, baseUrl, model }
 }
@@ -207,7 +209,7 @@ export async function POST(request: Request) {
       {
         ok: false,
         error:
-          'Server-side AI is not configured yet. Add AI_API_KEY or OPENAI_API_KEY to your Vercel environment variables.',
+          'Server-side AI is not configured yet. Add HF_TOKEN or AI_API_KEY to your Vercel environment variables.',
       },
       503,
     )

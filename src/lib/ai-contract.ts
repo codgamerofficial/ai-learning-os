@@ -1,4 +1,4 @@
-import type { ChatMessage, PerformanceInsight, PerformanceRow, QuizQuestion } from '../types'
+import type { ChatMessage, PerformanceInsight, PerformanceRow, QuizQuestion } from '../types.js'
 
 export type AiTask =
   | 'study-summary'
