@@ -1,9 +1,5 @@
 import clsx from 'clsx'
-import type {
-  ButtonHTMLAttributes,
-  ComponentPropsWithoutRef,
-  ReactNode,
-} from 'react'
+import type { ReactNode } from 'react'
 import { motion, useMotionValue, useMotionTemplate, type HTMLMotionProps } from 'framer-motion'
 
 export function Panel({
@@ -45,7 +41,7 @@ export function Panel({
         }}
       />
       <div className="relative z-10 p-5 md:p-6 h-full">
-        {children}
+        {children as ReactNode}
       </div>
     </motion.section>
   )

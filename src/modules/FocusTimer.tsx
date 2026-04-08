@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Play, Pause, RotateCcw, Timer } from 'lucide-react'
+import { Play, Pause, RotateCcw } from 'lucide-react'
 import { Panel, SectionTitle } from '../components/ui'
 
 export function FocusTimer() {

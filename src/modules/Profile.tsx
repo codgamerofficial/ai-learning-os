@@ -1,4 +1,4 @@
-import { UserCircle, LogOut, Shield, Key } from 'lucide-react'
+import { UserCircle, LogOut } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { SectionTitle, MetricCard } from '../components/ui'
 
@@ -10,24 +10,20 @@ export function Profile() {
       <SectionTitle 
         title="My Profile" 
         eyebrow="Identity" 
-        detail="Manage your account details and current session logic." 
+        body="Manage your account details and current session logic." 
       />
 
       <div className="grid gap-6 md:grid-cols-2">
         <MetricCard
           label="Account Provider"
           value={user?.app_metadata?.provider || 'Google'}
-          icon={Shield}
-          trend={1}
-          trendLabel="Secure connection active"
+          tone="accent"
         />
 
         <MetricCard
           label="Authentication Level"
           value="Standard"
-          icon={Key}
-          trend={1}
-          trendLabel="Valid Session token"
+          tone="neutral"
         />
       </div>
 

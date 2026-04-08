@@ -13,7 +13,6 @@ import {
   UserCircle,
   Menu,
   SunMedium,
-  X,
   type LucideIcon,
 } from 'lucide-react'
 import {

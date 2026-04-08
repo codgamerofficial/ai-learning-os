@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Info } from 'lucide-react'
 import { subscribeToasts, type Toast } from '../lib/toast'
 
 export function Toaster() {
