@@ -1,4 +1,5 @@
 import { startTransition, useDeferredValue, useState } from 'react'
+import { motion } from 'framer-motion'
 import {
   BarChart3,
   Download,
@@ -7,6 +8,7 @@ import {
   Sparkles,
   Trash2,
 } from 'lucide-react'
+import { toast } from '../lib/toast'
 import {
   Bar,
   BarChart,
@@ -112,7 +114,10 @@ export function PerformanceDashboard() {
 
     setIsBusy(true)
     const result = await analyzePerformance(rows)
-    startTransition(() => setInsights(result))
+    startTransition(() => {
+      setInsights(result)
+      toast({ title: 'Analysis Complete', message: 'Generated a personalized study plan.', type: 'success' })
+    })
     setIsBusy(false)
   }
 
@@ -145,7 +150,13 @@ export function PerformanceDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_380px]">
         <Panel className="space-y-5">
           <SectionTitle
@@ -160,11 +171,22 @@ export function PerformanceDashboard() {
             }
           />
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <MetricCard label="Average score" value={`${averageScore}%`} tone="accent" />
-            <MetricCard label="Average target gap" value={`${averageGap} pts`} />
-            <MetricCard label="Improving subjects" value={`${improvingSubjects}/${rows.length}`} />
-          </div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.1 }}
+            className="grid gap-4 md:grid-cols-3"
+          >
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <MetricCard label="Average score" value={`${averageScore}%`} tone="accent" />
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <MetricCard label="Average target gap" value={`${averageGap} pts`} />
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <MetricCard label="Improving subjects" value={`${improvingSubjects}/${rows.length}`} />
+            </motion.div>
+          </motion.div>
 
           <div className="overflow-x-auto rounded-[26px] border border-[rgb(var(--line))] bg-[rgb(var(--panel-strong))]">
             <table className="min-w-full text-left text-sm">
@@ -345,10 +367,10 @@ export function PerformanceDashboard() {
                 <CartesianGrid stroke="rgba(148, 163, 184, 0.16)" vertical={false} />
                 <XAxis dataKey="subject" tickLine={false} axisLine={false} />
                 <YAxis tickLine={false} axisLine={false} />
-                <Tooltip />
+                <Tooltip cursor={{ fill: 'rgba(37,99,235,0.1)' }} contentStyle={{ borderRadius: '16px', border: '1px solid rgba(var(--line))', backgroundColor: 'rgba(var(--panel-strong))' }} />
                 <Legend />
-                <Bar dataKey="current" fill="#1f7a6e" radius={[10, 10, 0, 0]} />
-                <Bar dataKey="target" fill="#d9895a" radius={[10, 10, 0, 0]} />
+                <Bar dataKey="current" fill="#2563EB" radius={[10, 10, 0, 0]} />
+                <Bar dataKey="target" fill="#FF5722" radius={[10, 10, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -366,27 +388,28 @@ export function PerformanceDashboard() {
                 <CartesianGrid stroke="rgba(148, 163, 184, 0.16)" vertical={false} />
                 <XAxis dataKey="subject" tickLine={false} axisLine={false} />
                 <YAxis tickLine={false} axisLine={false} />
-                <Tooltip />
+                <Tooltip contentStyle={{ borderRadius: '16px', border: '1px solid rgba(var(--line))', backgroundColor: 'rgba(var(--panel-strong))' }} />
                 <Legend />
                 <Line
                   type="monotone"
                   dataKey="previous"
                   stroke="#94a3b8"
                   strokeWidth={3}
-                  dot={{ fill: '#94a3b8' }}
+                  dot={{ fill: '#94a3b8', strokeWidth: 2, r: 4 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="current"
-                  stroke="#1f7a6e"
+                  stroke="#2563EB"
                   strokeWidth={3}
-                  dot={{ fill: '#1f7a6e' }}
+                  dot={{ fill: '#2563EB', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, fill: '#FF5722' }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </Panel>
       </div>
-    </div>
+    </motion.div>
   )
 }

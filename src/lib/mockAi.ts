@@ -1,4 +1,4 @@
-import type { PerformanceInsight, PerformanceRow, QuizQuestion } from '../types'
+import type { PerformanceInsight, PerformanceRow, QuizQuestion } from '../types.js'
 
 const stopWords = new Set([
   'a',

@@ -1,4 +1,5 @@
 import { startTransition, useDeferredValue, useState, type ChangeEvent } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   BrainCircuit,
   Download,
@@ -8,6 +9,7 @@ import {
   NotebookPen,
   Sparkles,
 } from 'lucide-react'
+import { toast } from '../lib/toast'
 
 import {
   answerStudyQuestion,
@@ -78,6 +80,7 @@ export function StudyCopilot() {
     startTransition(() => {
       setSummary(bullets)
       setActiveTab('summary')
+      toast({ title: 'Summary Generated', message: 'Condensation complete!', type: 'success' })
     })
     setBusyAction(null)
   }
@@ -92,6 +95,7 @@ export function StudyCopilot() {
     startTransition(() => {
       setQuiz(questions)
       setActiveTab('quiz')
+      toast({ title: 'Quiz Ready', message: `Generated ${questions.length} questions.`, type: 'success' })
     })
     setBusyAction(null)
   }
@@ -163,7 +167,13 @@ export function StudyCopilot() {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.18fr)_360px]">
         <Panel className="space-y-5">
           <SectionTitle
@@ -271,24 +281,31 @@ export function StudyCopilot() {
             body="This module is tuned so a reviewer can instantly see how notes become clearer, testable, and interactive."
           />
 
-          <div className="space-y-4">
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ staggerChildren: 0.1 }}
+            className="space-y-4"
+          >
             {[
               'Paste or upload notes to seed the workspace.',
               'Summarize into high-signal bullets for quick review.',
               'Generate MCQs to convert passive reading into active recall.',
               'Ask follow-up questions and keep the tutor grounded in the source material.',
             ].map((step, index) => (
-              <div
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
                 key={step}
-                className="rounded-[24px] border border-[rgb(var(--line))] bg-[rgb(var(--panel-strong))] p-4"
+                className="rounded-[24px] border border-[rgb(var(--line))] bg-[rgb(var(--panel-strong))] p-4 hover:border-[rgb(var(--accent-border))] transition-colors duration-300"
               >
                 <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[rgb(var(--muted))]">
                   Step {index + 1}
                 </p>
                 <p className="mt-2 text-sm leading-6 text-[rgb(var(--text))]">{step}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </Panel>
       </div>
 
@@ -432,6 +449,6 @@ export function StudyCopilot() {
           </div>
         ) : null}
       </Panel>
-    </div>
+    </motion.div>
   )
 }

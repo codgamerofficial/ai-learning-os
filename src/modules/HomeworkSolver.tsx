@@ -1,4 +1,5 @@
 import { startTransition, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Download,
   LoaderCircle,
@@ -6,6 +7,7 @@ import {
   Sparkles,
   WandSparkles,
 } from 'lucide-react'
+import { toast } from '../lib/toast'
 
 import {
   explainHomeworkSimply,
@@ -62,6 +64,7 @@ export function HomeworkSolver() {
     startTransition(() => {
       setSolution(steps)
       setActiveTab('solution')
+      toast({ title: 'Solution Ready', message: 'Step-by-step logic generated.', type: 'success' })
     })
     setBusyAction(null)
   }
@@ -76,6 +79,7 @@ export function HomeworkSolver() {
     startTransition(() => {
       setSimpleExplanation(explanation)
       setActiveTab('simple')
+      toast({ title: 'Explanation Updated', message: 'Translated to simple terms.', type: 'success' })
     })
     setBusyAction(null)
   }
@@ -121,7 +125,13 @@ export function HomeworkSolver() {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.16fr)_360px]">
         <Panel className="space-y-5">
           <SectionTitle
@@ -199,23 +209,30 @@ export function HomeworkSolver() {
             body="The solver is designed to show structure, translate jargon, and immediately create extra practice."
           />
 
-          <div className="space-y-4">
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ staggerChildren: 0.1 }}
+            className="space-y-4"
+          >
             {[
               'Solve: breaks the task into ordered, checkable steps.',
               'Explain Simply: rewrites the logic so a student can repeat it later without the app.',
               'Generate Similar Questions: keeps the practice loop going with nearby variations.',
             ].map((item, index) => (
-              <div
+              <motion.div
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
                 key={item}
-                className="rounded-[24px] border border-[rgb(var(--line))] bg-[rgb(var(--panel-strong))] p-4"
+                className="rounded-[24px] border border-[rgb(var(--line))] bg-[rgb(var(--panel-strong))] p-4 hover:border-[rgb(var(--accent-border))] transition-colors duration-300"
               >
                 <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[rgb(var(--muted))]">
                   Focus {index + 1}
                 </p>
                 <p className="mt-2 text-sm leading-6 text-[rgb(var(--text))]">{item}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </Panel>
       </div>
 
@@ -303,6 +320,6 @@ export function HomeworkSolver() {
           )
         ) : null}
       </Panel>
-    </div>
+    </motion.div>
   )
 }
