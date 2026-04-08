@@ -1,12 +1,14 @@
 import clsx from 'clsx'
-import { Suspense, lazy, useEffect } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import {
+  AlertTriangle,
   BarChart3,
   MoonStar,
   NotebookPen,
   Sigma,
   Sparkles,
   SunMedium,
+  X,
   type LucideIcon,
 } from 'lucide-react'
 import {
@@ -18,7 +20,7 @@ import {
   useLocation,
 } from 'react-router-dom'
 
-import { getAiRuntime } from './lib/ai'
+import { getAiRuntime, onAiFallback, type AiFallbackNotice } from './lib/ai'
 import { useLocalStorageState } from './hooks/useLocalStorageState'
 import type { ThemeMode } from './types'
 
@@ -79,6 +81,7 @@ function AppFrame({
   theme: ThemeMode
   setTheme: (value: ThemeMode) => void
 }) {
+  const [aiNotice, setAiNotice] = useState<AiFallbackNotice | null>(null)
   const location = useLocation()
   const currentPage =
     navigation.find((item) => item.path === location.pathname) || navigation[0]
@@ -87,6 +90,8 @@ function AppFrame({
   useEffect(() => {
     document.title = `${currentPage.label} | AI Learning OS`
   }, [currentPage.label])
+
+  useEffect(() => onAiFallback((notice) => setAiNotice(notice)), [])
 
   return (
     <div className="min-h-screen px-3 py-3 md:px-5 md:py-5">
@@ -207,6 +212,36 @@ function AppFrame({
               </div>
             </div>
           </header>
+
+          {aiNotice ? (
+            <div className="border-b border-[rgb(var(--line))] px-5 py-4 md:px-8">
+              <div className="flex flex-col gap-4 rounded-[26px] border border-amber-500/20 bg-[rgba(245,158,11,0.08)] p-4 md:flex-row md:items-start md:justify-between">
+                <div className="flex gap-3">
+                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-300">
+                    <AlertTriangle className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-[rgb(var(--text))]">
+                      {aiNotice.title}
+                    </p>
+                    <p className="text-sm leading-6 text-[rgb(var(--text))]">
+                      {aiNotice.message}
+                    </p>
+                    <p className="text-sm leading-6 text-[rgb(var(--muted))]">
+                      The workspace stayed usable, but this result came from local fallback logic instead of the live model response.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgb(var(--line))] bg-[rgb(var(--panel-strong))] text-[rgb(var(--muted))] transition hover:border-amber-500/30 hover:text-[rgb(var(--text))]"
+                  onClick={() => setAiNotice(null)}
+                  aria-label="Dismiss AI warning"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           <div className="px-5 py-5 md:px-8 md:py-8">
             <Suspense fallback={<ModuleFallback />}>

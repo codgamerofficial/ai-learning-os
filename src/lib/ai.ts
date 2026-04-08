@@ -17,6 +17,25 @@ type AiRuntime = {
   detail: string
 }
 
+export type AiFallbackNotice = {
+  id: string
+  task: AiRequestPayload['task']
+  title: string
+  message: string
+}
+
+const AI_FALLBACK_EVENT = 'ailos:secure-ai-fallback'
+
+const taskLabels = {
+  'study-summary': 'Summary generation',
+  'study-quiz': 'Quiz generation',
+  'study-chat': 'Tutor chat',
+  'performance-insights': 'Performance analysis',
+  'homework-solve': 'Homework solving',
+  'homework-simple': 'Simple explanation',
+  'homework-practice': 'Practice question generation',
+} satisfies Record<AiRequestPayload['task'], string>
+
 function getProvider() {
   return import.meta.env.VITE_AI_PROVIDER || 'mock'
 }
@@ -39,7 +58,58 @@ export function getAiRuntime(): AiRuntime {
 
 export { extractKeywords }
 
-async function callSecureAi<TTask extends AiRequestPayload['task']>(
+export function onAiFallback(listener: (notice: AiFallbackNotice) => void) {
+  if (typeof window === 'undefined') {
+    return () => {}
+  }
+
+  const handleEvent = (event: Event) => {
+    listener((event as CustomEvent<AiFallbackNotice>).detail)
+  }
+
+  window.addEventListener(AI_FALLBACK_EVENT, handleEvent)
+
+  return () => window.removeEventListener(AI_FALLBACK_EVENT, handleEvent)
+}
+
+function emitAiFallback(task: AiRequestPayload['task'], error: unknown) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  const reason =
+    error instanceof Error ? error.message : 'Unexpected secure AI server error.'
+
+  window.dispatchEvent(
+    new CustomEvent<AiFallbackNotice>(AI_FALLBACK_EVENT, {
+      detail: {
+        id: `${task}-${Date.now()}`,
+        task,
+        title: `${taskLabels[task]} used local fallback output.`,
+        message: `Secure AI request failed: ${reason}`,
+      },
+    }),
+  )
+}
+
+async function runWithSecureFallback<T>(
+  task: AiRequestPayload['task'],
+  secureAction: () => Promise<T>,
+  fallbackAction: () => T,
+) {
+  if (getAiRuntime().mode === 'mock') {
+    return fallbackAction()
+  }
+
+  try {
+    return await secureAction()
+  } catch (error) {
+    emitAiFallback(task, error)
+    return fallbackAction()
+  }
+}
+
+async function callSecureAi<TTask extends AiRequestPayload['task']}(
   payload: Extract<AiRequestPayload, { task: TTask }>,
 ) {
   const response = await fetch('/api/ai', {
@@ -61,92 +131,78 @@ async function callSecureAi<TTask extends AiRequestPayload['task']>(
 }
 
 export async function generateSummary(notes: string) {
-  if (getAiRuntime().mode === 'mock') {
-    return buildMockSummary(notes)
-  }
-
-  try {
-    const response = await callSecureAi({ task: 'study-summary', notes })
-    return response.bullets
-  } catch {
-    return buildMockSummary(notes)
-  }
+  return runWithSecureFallback(
+    'study-summary',
+    async () => {
+      const response = await callSecureAi({ task: 'study-summary', notes })
+      return response.bullets
+    },
+    () => buildMockSummary(notes),
+  )
 }
 
 export async function generateQuiz(notes: string) {
-  if (getAiRuntime().mode === 'mock') {
-    return buildMockQuiz(notes)
-  }
-
-  try {
-    const response = await callSecureAi({ task: 'study-quiz', notes })
-    return response.questions
-  } catch {
-    return buildMockQuiz(notes)
-  }
+  return runWithSecureFallback(
+    'study-quiz',
+    async () => {
+      const response = await callSecureAi({ task: 'study-quiz', notes })
+      return response.questions
+    },
+    () => buildMockQuiz(notes),
+  )
 }
 
 export async function answerStudyQuestion(notes: string, question: string, history: ChatMessage[]) {
-  if (getAiRuntime().mode === 'mock') {
-    return buildMockStudyAnswer(notes, question)
-  }
-
-  try {
-    const response = await callSecureAi({ task: 'study-chat', notes, question, history })
-    return response.answer
-  } catch {
-    return buildMockStudyAnswer(notes, question)
-  }
+  return runWithSecureFallback(
+    'study-chat',
+    async () => {
+      const response = await callSecureAi({ task: 'study-chat', notes, question, history })
+      return response.answer
+    },
+    () => buildMockStudyAnswer(notes, question),
+  )
 }
 
 export async function analyzePerformance(rows: PerformanceRow[]) {
-  if (getAiRuntime().mode === 'mock') {
-    return buildMockPerformanceInsight(rows)
-  }
-
-  try {
-    const response = await callSecureAi({ task: 'performance-insights', rows })
-    return response.insight
-  } catch {
-    return buildMockPerformanceInsight(rows)
-  }
+  return runWithSecureFallback(
+    'performance-insights',
+    async () => {
+      const response = await callSecureAi({ task: 'performance-insights', rows })
+      return response.insight
+    },
+    () => buildMockPerformanceInsight(rows),
+  )
 }
 
 export async function solveHomework(question: string) {
-  if (getAiRuntime().mode === 'mock') {
-    return buildMockHomeworkSolution(question)
-  }
-
-  try {
-    const response = await callSecureAi({ task: 'homework-solve', question })
-    return response.steps
-  } catch {
-    return buildMockHomeworkSolution(question)
-  }
+  return runWithSecureFallback(
+    'homework-solve',
+    async () => {
+      const response = await callSecureAi({ task: 'homework-solve', question })
+      return response.steps
+    },
+    () => buildMockHomeworkSolution(question),
+  )
 }
 
 export async function explainHomeworkSimply(question: string) {
-  if (getAiRuntime().mode === 'mock') {
-    return buildMockHomeworkSimple(question)
-  }
-
-  try {
-    const response = await callSecureAi({ task: 'homework-simple', question })
-    return response.explanation
-  } catch {
-    return buildMockHomeworkSimple(question)
-  }
+  return runWithSecureFallback(
+    'homework-simple',
+    async () => {
+      const response = await callSecureAi({ task: 'homework-simple', question })
+      return response.explanation
+    },
+    () => buildMockHomeworkSimple(question),
+  )
 }
 
 export async function generateSimilarQuestions(question: string) {
-  if (getAiRuntime().mode === 'mock') {
-    return buildMockPracticeQuestions(question)
-  }
-
-  try {
-    const response = await callSecureAi({ task: 'homework-practice', question })
-    return response.questions
-  } catch {
-    return buildMockPracticeQuestions(question)
-  }
+  return runWithSecureFallback(
+    'homework-practice',
+    async () => {
+      const response = await callSecureAi({ task: 'homework-practice', question })
+      return response.questions
+    },
+    () => buildMockPracticeQuestions(question),
+  )
 }
