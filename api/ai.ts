@@ -260,7 +260,7 @@ Core behaviors:
   }
 }
 
-export async function POST(request: Request) {
+export default async function handler(request: Request) {
   const { apiKey } = serverConfig()
 
   if (!apiKey) {
