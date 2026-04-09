@@ -116,6 +116,7 @@ export function TabButton({
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       className={clsx(
         'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200',
         active
@@ -151,6 +152,7 @@ export function MetricCard({
   return (
     <motion.div
       whileHover={{ y: -5, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
       onMouseMove={handleMouseMove}
       className={clsx(
         'group rounded-[22px] border px-4 py-4 relative overflow-hidden transition-all duration-300',

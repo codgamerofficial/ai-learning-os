@@ -1,4 +1,4 @@
-import type { PerformanceInsight, PerformanceRow, QuizQuestion } from '../types.js'
+import type { Flashcard, PerformanceInsight, PerformanceRow, QuizQuestion } from '../types.js'
 
 const stopWords = new Set([
   'a',
@@ -321,4 +321,29 @@ export function buildMockPracticeQuestions(question: string) {
     'Rewrite the question in a shorter form and solve that first.',
     'Design a harder version of the problem that adds one extra step.',
   ]
+}
+
+export function buildMockFlashcards(notes: string, count = 8): Flashcard[] {
+  const ideas = splitIdeas(notes)
+  const keywords = extractKeywords(notes, count)
+
+  if (ideas.length < 2) {
+    return [
+      { id: 'fc-1', front: 'What are the main topics in your notes?', back: 'Add more detailed notes to generate better flashcards.', mastered: false },
+      { id: 'fc-2', front: 'Why use flashcards for studying?', back: 'Active recall via flashcards strengthens memory pathways and improves long-term retention.', mastered: false },
+    ]
+  }
+
+  return keywords.slice(0, count).map((keyword, index) => {
+    const relatedIdea = ideas.find(idea =>
+      idea.toLowerCase().includes(keyword.toLowerCase().replace(/\.$/, ''))
+    ) || ideas[index % ideas.length]
+
+    return {
+      id: `fc-${Date.now()}-${index}`,
+      front: `What is the significance of ${keyword.replace(/\.$/, '')}?`,
+      back: sentenceCase(relatedIdea),
+      mastered: false,
+    }
+  })
 }

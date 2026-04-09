@@ -1,4 +1,4 @@
-import type { ChatMessage, PerformanceInsight, PerformanceRow, QuizQuestion } from '../types.js'
+import type { ChatMessage, Flashcard, PerformanceInsight, PerformanceRow, QuizQuestion } from '../types.js'
 
 export type AiTask =
   | 'study-summary'
@@ -8,6 +8,8 @@ export type AiTask =
   | 'homework-solve'
   | 'homework-simple'
   | 'homework-practice'
+  | 'jarvis-chat'
+  | 'flashcard-generate'
 
 export type AiRequestPayload =
   | { task: 'study-summary'; notes: string }
@@ -17,6 +19,8 @@ export type AiRequestPayload =
   | { task: 'homework-solve'; question: string }
   | { task: 'homework-simple'; question: string }
   | { task: 'homework-practice'; question: string }
+  | { task: 'jarvis-chat'; question: string; history: ChatMessage[] }
+  | { task: 'flashcard-generate'; notes: string; count: number }
 
 export type AiResponsePayload =
   | { task: 'study-summary'; bullets: string[] }
@@ -26,6 +30,8 @@ export type AiResponsePayload =
   | { task: 'homework-solve'; steps: string[] }
   | { task: 'homework-simple'; explanation: string }
   | { task: 'homework-practice'; questions: string[] }
+  | { task: 'jarvis-chat'; answer: string }
+  | { task: 'flashcard-generate'; cards: Flashcard[] }
 
 export type AiApiSuccess = {
   ok: true

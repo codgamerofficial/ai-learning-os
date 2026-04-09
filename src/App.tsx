@@ -13,6 +13,8 @@ import {
   UserCircle,
   Menu,
   SunMedium,
+  Layers,
+  Calendar,
   type LucideIcon,
 } from 'lucide-react'
 import {
@@ -24,6 +26,8 @@ import {
   useLocation,
 } from 'react-router-dom'
 
+import { AnimatedBackground } from './components/AnimatedBackground'
+import { JarvisAssistant } from './components/JarvisAssistant'
 import { getAiRuntime, onAiFallback, type AiFallbackNotice } from './lib/ai'
 import { useLocalStorageState } from './hooks/useLocalStorageState'
 import type { ThemeMode } from './types'
@@ -55,6 +59,18 @@ const FocusTimer = lazy(() =>
 const Profile = lazy(() =>
   import('./modules/Profile').then((module) => ({
     default: module.Profile,
+  })),
+)
+
+const FlashcardStudio = lazy(() =>
+  import('./modules/FlashcardStudio').then((module) => ({
+    default: module.FlashcardStudio,
+  })),
+)
+
+const StudyPlanner = lazy(() =>
+  import('./modules/StudyPlanner').then((module) => ({
+    default: module.StudyPlanner,
   })),
 )
 
@@ -94,11 +110,25 @@ const navigation: NavigationItem[] = [
     icon: Sigma,
   },
   {
+    path: '/flashcards',
+    label: 'Flashcard Studio',
+    description: 'AI-generated cards for active recall.',
+    detail: 'Turn concepts into flip cards and track your mastery.',
+    icon: Layers,
+  },
+  {
     path: '/focus',
-    label: 'Focus Timer',
-    description: 'Pomodoro timer for deep work sessions.',
-    detail: 'Stay sharp with 25 minutes of focus and 5 minutes of rest.',
+    label: 'Focus Engine',
+    description: 'Track deep work time and streaks.',
+    detail: 'Stay sharp with 25 minutes of focus and ambient sounds.',
     icon: Timer,
+  },
+  {
+    path: '/planner',
+    label: 'Study Planner',
+    description: 'Weekly schedule and AI suggestions.',
+    detail: 'Visualize your weekly study blocks and keep sessions balanced.',
+    icon: Calendar,
   },
   {
     path: '/profile',
@@ -109,7 +139,13 @@ const navigation: NavigationItem[] = [
   },
 ]
 
-function SidebarContent({ aiRuntime, setIsSidebarOpen }: any) {
+function SidebarContent({
+  aiRuntime,
+  setIsSidebarOpen,
+}: {
+  aiRuntime: { label: string; detail: string }
+  setIsSidebarOpen?: (open: boolean) => void
+}) {
   return (
     <div className="flex h-full flex-col">
       <div className="space-y-6">
@@ -219,6 +255,8 @@ function AppFrame({
         <button 
           onClick={() => setIsSidebarOpen(true)}
           className="rounded-xl border border-[rgb(var(--sidebar-line))] bg-[rgb(var(--sidebar-bg))] p-2 text-[rgb(var(--sidebar-text))] hover:bg-white/10"
+          title="Open Navigation Menu"
+          aria-label="Open Navigation Menu"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -335,7 +373,9 @@ function AppFrame({
                   <Route path="/study" element={<StudyCopilot />} />
                   <Route path="/performance" element={<PerformanceDashboard />} />
                   <Route path="/homework" element={<HomeworkSolver />} />
+                  <Route path="/flashcards" element={<FlashcardStudio />} />
                   <Route path="/focus" element={<FocusTimer />} />
+                  <Route path="/planner" element={<StudyPlanner />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="*" element={<Navigate to="/study" replace />} />
                 </Routes>
@@ -384,6 +424,7 @@ function AppRouter() {
   return (
     <BrowserRouter>
       <AppFrame theme={theme} setTheme={setTheme} />
+      <JarvisAssistant />
     </BrowserRouter>
   )
 }
@@ -391,6 +432,7 @@ function AppRouter() {
 function App() {
   return (
     <AuthProvider>
+      <AnimatedBackground />
       <AppRouter />
     </AuthProvider>
   )

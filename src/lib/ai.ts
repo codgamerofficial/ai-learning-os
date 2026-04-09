@@ -1,6 +1,7 @@
 import type { ChatMessage, PerformanceRow } from '../types'
 import type { AiApiResponse, AiRequestPayload, AiResponsePayload } from './ai-contract'
 import {
+  buildMockFlashcards,
   buildMockHomeworkSimple,
   buildMockHomeworkSolution,
   buildMockPerformanceInsight,
@@ -34,6 +35,8 @@ const taskLabels = {
   'homework-solve': 'Homework solving',
   'homework-simple': 'Simple explanation',
   'homework-practice': 'Practice question generation',
+  'jarvis-chat': 'Jarvis assistant',
+  'flashcard-generate': 'Flashcard generation',
 } satisfies Record<AiRequestPayload['task'], string>
 
 function getProvider() {
@@ -204,5 +207,27 @@ export async function generateSimilarQuestions(question: string) {
       return response.questions
     },
     () => buildMockPracticeQuestions(question),
+  )
+}
+
+export async function askJarvis(question: string, history: ChatMessage[]) {
+  return runWithSecureFallback(
+    'jarvis-chat',
+    async () => {
+      const response = await callSecureAi({ task: 'jarvis-chat', question, history })
+      return response.answer
+    },
+    () => `I'm currently operating in demo mode. To unlock my full capabilities, please configure the secure AI server. In the meantime, I received your question: "${question}" — and I assure you, the real J.A.R.V.I.S. would have a brilliant answer ready.`,
+  )
+}
+
+export async function generateFlashcards(notes: string, count = 8) {
+  return runWithSecureFallback(
+    'flashcard-generate',
+    async () => {
+      const response = await callSecureAi({ task: 'flashcard-generate', notes, count })
+      return response.cards
+    },
+    () => buildMockFlashcards(notes, count),
   )
 }

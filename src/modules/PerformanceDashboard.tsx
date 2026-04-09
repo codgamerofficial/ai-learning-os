@@ -205,6 +205,8 @@ export function PerformanceDashboard() {
                   <tr key={row.id} className="border-b border-[rgb(var(--line))] last:border-b-0">
                     <td className="px-4 py-3 align-top">
                       <input
+                        title="Subject Name"
+                        placeholder="Subject"
                         value={row.subject}
                         onChange={(event) =>
                           updateTextField(row.id, 'subject', event.target.value)
@@ -215,6 +217,8 @@ export function PerformanceDashboard() {
                     <td className="px-4 py-3 align-top">
                       <input
                         type="number"
+                        title="Current Grade"
+                        placeholder="Current"
                         value={row.current}
                         onChange={(event) =>
                           updateNumberField(row.id, 'current', event.target.value)
@@ -225,6 +229,8 @@ export function PerformanceDashboard() {
                     <td className="px-4 py-3 align-top">
                       <input
                         type="number"
+                        title="Previous Grade"
+                        placeholder="Previous"
                         value={row.previous}
                         onChange={(event) =>
                           updateNumberField(row.id, 'previous', event.target.value)
@@ -235,6 +241,8 @@ export function PerformanceDashboard() {
                     <td className="px-4 py-3 align-top">
                       <input
                         type="number"
+                        title="Target Grade"
+                        placeholder="Target"
                         value={row.target}
                         onChange={(event) =>
                           updateNumberField(row.id, 'target', event.target.value)
@@ -244,6 +252,8 @@ export function PerformanceDashboard() {
                     </td>
                     <td className="px-4 py-3 align-top">
                       <input
+                        title="Focus Area"
+                        placeholder="Focus Area"
                         value={row.focus}
                         onChange={(event) => updateTextField(row.id, 'focus', event.target.value)}
                         className="w-[220px] rounded-2xl border border-[rgb(var(--line))] bg-transparent px-3 py-2 text-[rgb(var(--text))] outline-none transition focus:border-[rgb(var(--accent))]"

@@ -2,6 +2,7 @@
 
 import type { AiApiFailure, AiApiSuccess, AiRequestPayload } from '../src/lib/ai-contract.js'
 import {
+  buildMockFlashcards,
   buildMockHomeworkSimple,
   buildMockHomeworkSolution,
   buildMockPerformanceInsight,
@@ -11,7 +12,7 @@ import {
   buildMockSummary,
   safeJsonParse,
 } from '../src/lib/mockAi.js'
-import type { PerformanceInsight, QuizQuestion } from '../src/types.js'
+import type { Flashcard, PerformanceInsight, QuizQuestion } from '../src/types.js'
 
 export const config = {
   runtime: 'nodejs',
@@ -63,6 +64,19 @@ function isPerformanceInsight(value: unknown): value is PerformanceInsight {
     isNonEmptyStringArray((value as PerformanceInsight).studyPlan) &&
     isNonEmptyStringArray((value as PerformanceInsight).priorityTopics) &&
     typeof (value as PerformanceInsight).narrative === 'string'
+  )
+}
+
+function isFlashcardArray(value: unknown): value is Flashcard[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        item &&
+        typeof item === 'object' &&
+        typeof item.front === 'string' &&
+        typeof item.back === 'string',
+    )
   )
 }
 
@@ -197,6 +211,51 @@ async function handleTask(payload: AiRequestPayload): Promise<AiApiSuccess> {
         : buildMockPracticeQuestions(payload.question)
 
       return { ok: true, data: { task: 'homework-practice', questions } }
+    }
+    case 'jarvis-chat': {
+      const transcript = payload.history
+        .slice(-10)
+        .map((message) => `${message.role}: ${message.content}`)
+        .join('\n')
+
+      const answer = await requestChatCompletion(
+        `You are J.A.R.V.I.S., an advanced AI assistant integrated into the AI Learning OS platform — a student productivity workspace. Your personality is inspired by Tony Stark's AI: calm, articulate, subtly witty, and supremely competent.
+
+Core behaviors:
+- Always address the user respectfully. You may occasionally use light, dry humor.
+- You are a polymath. You can help with any academic subject: math, science, history, programming, languages, writing, etc.
+- Give clear, well-structured, educational answers. Use bullet points, numbered steps, or headers when it improves clarity.
+- If the student asks for help on a problem, walk them through the reasoning — don't just give the answer.
+- If you don't know something, say so honestly.
+- Keep responses focused and concise unless the student asks for a detailed explanation.
+- Never refuse to help with a legitimate academic question.
+- You have access to no external tools or the internet. Answer from your training knowledge only.`,
+        `Chat history:\n${transcript}\n\nStudent's question:\n${payload.question.slice(0, 4000)}`,
+        0.5,
+      )
+
+      return { ok: true, data: { task: 'jarvis-chat', answer: answer || 'I apologize, but I was unable to process that request. Could you please rephrase your question?' } }
+    }
+    case 'flashcard-generate': {
+      const count = payload.count || 8
+      const response = await requestChatCompletion(
+        `Generate ${count} flashcards from the given study material. Each flashcard has a front (question) and back (answer). Return JSON only in the form {"cards":[{"front":"...","back":"..."}]}`,
+        payload.notes.slice(0, 18000),
+        0.5,
+      )
+      const parsed = safeJsonParse<{ cards?: Array<{ front: string; back: string }> }>(response)
+      const rawCards = isFlashcardArray(parsed?.cards)
+        ? parsed.cards.slice(0, count)
+        : buildMockFlashcards(payload.notes, count)
+
+      const cards: Flashcard[] = rawCards.map((card, index) => ({
+        id: `fc-${Date.now()}-${index}`,
+        front: card.front,
+        back: card.back,
+        mastered: false,
+      }))
+
+      return { ok: true, data: { task: 'flashcard-generate', cards } }
     }
   }
 }

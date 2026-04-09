@@ -1,4 +1,4 @@
-import type { ChatMessage, PerformanceInsight, PerformanceRow, QuizQuestion } from '../types'
+import type { ChatMessage, Flashcard, PerformanceInsight, PerformanceRow, QuizQuestion, StudyBlock } from '../types'
 
 export const sampleStudyNotes = `Photosynthesis is the process by which green plants, algae, and some bacteria convert light energy into chemical energy stored in glucose.
 
@@ -152,3 +152,24 @@ export const sampleHomeworkPractice = [
   'Solve 5x + 12 = 37.',
   'Solve 2x - 9 = 11.',
 ]
+
+export const sampleFlashcards: Flashcard[] = [
+  { id: 'fc-demo-1', front: 'What is photosynthesis?', back: 'The process by which green plants convert light energy into chemical energy stored in glucose.', mastered: false },
+  { id: 'fc-demo-2', front: 'Where does photosynthesis mainly take place?', back: 'In the chloroplasts, where chlorophyll captures sunlight to start a chain of reactions.', mastered: false },
+  { id: 'fc-demo-3', front: 'What happens during the light-dependent stage?', back: 'Water molecules split, releasing oxygen as a by-product, and creating ATP and NADPH.', mastered: false },
+  { id: 'fc-demo-4', front: 'What does the Calvin cycle do?', back: 'Uses ATP, NADPH, and carbon dioxide to build glucose molecules.', mastered: false },
+  { id: 'fc-demo-5', front: 'What three factors affect the rate of photosynthesis?', back: 'Light intensity, carbon dioxide concentration, and temperature.', mastered: false },
+  { id: 'fc-demo-6', front: 'Why is photosynthesis globally important?', back: 'It produces oxygen and supports most food chains on Earth, not just plant growth.', mastered: false },
+]
+
+export const sampleStudyBlocks: StudyBlock[] = [
+  { id: 'sb-1', day: 'Mon', startHour: 9, duration: 2, subject: 'Mathematics', color: '#3b82f6' },
+  { id: 'sb-2', day: 'Mon', startHour: 14, duration: 1, subject: 'Physics', color: '#8b5cf6' },
+  { id: 'sb-3', day: 'Tue', startHour: 10, duration: 2, subject: 'Chemistry', color: '#10b981' },
+  { id: 'sb-4', day: 'Wed', startHour: 9, duration: 2, subject: 'History', color: '#f59e0b' },
+  { id: 'sb-5', day: 'Wed', startHour: 15, duration: 1, subject: 'English', color: '#ef4444' },
+  { id: 'sb-6', day: 'Thu', startHour: 10, duration: 2, subject: 'Physics', color: '#8b5cf6' },
+  { id: 'sb-7', day: 'Fri', startHour: 9, duration: 2, subject: 'Mathematics', color: '#3b82f6' },
+  { id: 'sb-8', day: 'Sat', startHour: 10, duration: 2, subject: 'Chemistry', color: '#10b981' },
+]
+

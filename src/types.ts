@@ -1,6 +1,7 @@
 export type ThemeMode = 'light' | 'dark'
 export type StudyTab = 'summary' | 'quiz' | 'chat'
 export type HomeworkTab = 'solution' | 'simple' | 'practice'
+export type FlashcardTab = 'study' | 'generate'
 
 export interface QuizQuestion {
   question: string
@@ -29,4 +30,30 @@ export interface PerformanceInsight {
   studyPlan: string[]
   priorityTopics: string[]
   narrative: string
+}
+
+export interface Flashcard {
+  id: string
+  front: string
+  back: string
+  mastered: boolean
+}
+
+export type WeekDay = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun'
+
+export interface StudyBlock {
+  id: string
+  day: WeekDay
+  startHour: number
+  duration: number
+  subject: string
+  color: string
+}
+
+export interface FocusSession {
+  id: string
+  date: string
+  duration: number
+  mode: 'focus' | 'break'
+  completedAt: number
 }

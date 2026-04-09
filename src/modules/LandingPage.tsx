@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Sparkles, Brain, Clock, Sigma, BarChart3, LogIn } from 'lucide-react'
+import { Sparkles, Brain, Clock, Sigma, BarChart3, LogIn, Layers, Calendar } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export function LandingPage() {
@@ -64,7 +64,7 @@ export function LandingPage() {
         </main>
 
         {/* Features Grids */}
-        <section className="mt-32 grid gap-6 md:grid-cols-2 lg:grid-cols-2 pb-32">
+        <section className="mt-32 grid gap-6 md:grid-cols-2 lg:grid-cols-3 pb-32">
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -125,7 +125,39 @@ export function LandingPage() {
             </div>
             <h3 className="font-display text-2xl font-semibold">Focus Engine</h3>
             <p className="mt-3 text-slate-400 leading-relaxed">
-              A built in Pomodoro timer with animated radial progress. Keep your time tracked and your mind focused without leaving the app boundaries.
+              A built in Pomodoro timer with animated radial progress. Keep your time tracked and your mind focused with ambient sounds and a streak tracker.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            viewport={{ once: true }}
+            className="rounded-[34px] border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+          >
+            <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+              <Layers className="h-6 w-6" />
+            </div>
+            <h3 className="font-display text-2xl font-semibold">Flashcard Studio</h3>
+            <p className="mt-3 text-slate-400 leading-relaxed">
+              Generate 3D animated flip-cards from your notes using AI. Test your active recall and track your mastery sequentially across your entire deck.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            viewport={{ once: true }}
+            className="rounded-[34px] border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+          >
+            <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <Calendar className="h-6 w-6" />
+            </div>
+            <h3 className="font-display text-2xl font-semibold">Study Planner</h3>
+            <p className="mt-3 text-slate-400 leading-relaxed">
+              Design a visual color-coded weekly schedule. Hit blockages? Let the AI analyze your weak subjects and auto-generate a balanced plan for you.
             </p>
           </motion.div>
 
